@@ -22,19 +22,110 @@ html, body {
   height: 100vh;
   background: #000000ee;
   color: white;
-  font-size: 18px;
+  font-size: 24px;
   justify-content: center;
   align-items: center;
   text-align: center;
   animation: blink 1.5s infinite;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
 }
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 @media screen and (orientation: portrait) {
-  .static-screen { display: none; }
+  .static-screen, .start-screen, .video-container { display: none; }
   .orientation-warning { display: flex; }
+}
+
+/* ----------- СТАРТОВЫЙ ЭКРАН ----------- */
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('pages/menu-bg.png') no-repeat center center;
+  background-size: cover;
+  position: fixed;
+  z-index: 50;
+}
+
+.logo {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ff6d6d;
+  text-shadow: 0 0 10px rgba(255, 109, 109, 0.7);
+  margin-bottom: 80px;
+  letter-spacing: 3px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+}
+
+.play-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 15px 60px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 0 #1e7e34;
+}
+
+.play-btn:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.settings-menu-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 50px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.settings-menu-btn:active {
+  background: #5a6268;
+}
+
+/* ----------- ВИДЕО ЗАСТАВКА ----------- */
+.video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 40;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-video {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
 }
 
 /* ----------- ОСНОВНОЙ ЭКРАН ----------- */
@@ -43,6 +134,7 @@ html, body {
   height: 720px;
   position: relative;
   overflow: hidden;
+  display: none;
 
   max-width: 100vw;
   max-height: 100vh;
@@ -50,7 +142,7 @@ html, body {
   transform-origin: top left;
   transform: scale(calc(min(100vw / 1280, 100vh / 720)));
 
-  background: url("pages/fon1.jpeg") no-repeat center center;
+  background: url("pages/fon1.png") no-repeat center center;
   background-size: contain;
   background-color: black;
 }
@@ -215,15 +307,13 @@ html, body {
   outline: none;
 }
 
-/* ----------- МОДАЛЬНЫЕ ОКНА (ПАСПОРТ, ДНЕВНИК) ----------- */
+/* ----------- МОДАЛЬНЫЕ ОКНА ----------- */
 .modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
-  height: 800px;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.85);
   z-index: 100;
   display: none;
   justify-content: center;
@@ -231,12 +321,71 @@ html, body {
   padding: 20px;
   box-sizing: border-box;
   border-radius: 12px;
+  border: 1px solid #444;
 }
 
-.modal img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 12px;
+#passport-modal, #diary-modal {
+  width: 300px;
+  height: 800px;
+}
+
+#name-modal, #settings-modal {
+  width: 320px;
+  padding: 30px;
+}
+
+.name-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+#player-name {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #333;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+
+#name-submit {
+  padding: 10px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.settings-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-item input[type="range"] {
+  width: 100%;
+}
+
+#settings-close {
+  padding: 10px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 /* ----------- БАННЕР УСТАНОВКИ PWA ----------- */
@@ -255,6 +404,7 @@ html, body {
   align-items: center;
   gap: 12px;
   box-shadow: 0 0 10px #000;
+  display: none;
 }
 
 #install-btn {
@@ -267,4 +417,217 @@ html, body {
 }
 #install-btn:focus {
   outline: none;
-} 
+}
+/* ... (предыдущие стили остаются без изменений) ... */
+
+/* ----------- МОДАЛЬНЫЕ ОКНА (ПАСПОРТ, ДНЕВНИК) ----------- */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: transparent !important;
+  border: none !important;
+}
+
+.modal-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+#name-modal, #settings-modal {
+  background: rgba(0, 0, 0, 0.85) !important;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #444 !important;
+  width: 320px;
+}
+/* ... (предыдущие стили) ... */
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.4s ease forwards;
+}
+
+/* Затемнение экрана */
+.screen-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 5;
+  display: none;
+}
+
+/* Подсказка пропуска видео */
+.skip-prompt {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #fff;
+  animation: pulse 1.5s infinite;
+}
+
+/* Быстрое меню */
+.quick-menu {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 25;
+}
+
+.quick-menu button {
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-menu button:hover {
+  background: rgba(50, 50, 150, 0.7);
+}
+
+/* Продолжить игру */
+.continue-btn {
+  background: #ff9800 !important;
+  box-shadow: 0 4px 0 #e08600 !important;
+}
+
+.continue-btn:active {
+  transform: translateY(4px);
+  box-shadow: none !important;
+}
+
+/* ... (предыдущие стили остаются без изменений до .settings-scroll) ... */
+
+.settings-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #333;
+}
+
+.settings-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-scroll::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 3px;
+}
+
+.settings-scroll::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 3px;
+}
+
+/* Убираем синие ободки */
+img, button, input, video {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+img:focus, button:focus, input:focus, video:focus {
+  outline: none;
+}
+
+/* Сообщение об ошибке имени */
+.error-message {
+  color: #ff6d6d;
+  font-size: 12px;
+  min-height: 14px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+}
+
+/* Затемнение экрана */
+.screen-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+
+/* ... (остальные стили остаются без изменений) ... */
+/* Стиль для затемнения перехода */
+#transition-overlay {
+  pointer-events: none;
+}
+
+/* Убираем синие ободки при клике */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Сообщение об ошибке имени */
+.error-message {
+  color: #ff6d6d;
+  font-size: 12px;
+  min-height: 14px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+}
+.screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 1s ease-in-out;
+}
