@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Школа №13</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" sizes="192x192" href="pages/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="pages/icon-512.png">
+  <meta name="theme-color" content="#111111" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+<body>
+  <div class="orientation-warning">
+    Пожалуйста, переверни телефон в горизонтальное положение
+  </div>
+  <div class="static-screen">
+    <div class="left-panel">
+      <img id="passport-button" src="pages/pass.jpg" alt="Паспорт" />
+      <img id="diary-button" src="pages/diary.jpg" alt="Дневник" />
+      <button id="add-choices-btn">Добавить вариант</button>
+    </div>
+    <div class="hud">
+      <img id="settings-btn" src="pages/settings.PNG" alt="Настройки" />
+      <div class="stats-column">
+        <div class="stat">РЕПУТАЦИЯ
+          <div class="progress"><div class="progress-fill rep"></div></div>
+        </div>
+        <div class="stat">ДРУЖБА
+          <div class="progress"><div class="progress-fill frnd"></div></div>
+        </div>
+        <div class="stat">ЗНАНИЯ
+          <div class="progress"><div class="progress-fill knwl"></div></div>
+        </div>
+      </div>
+      <div class="money">Баланс: 150 ₽</div>
+    </div>
+    <div class="dialogue">
+      <div class="speaker" id="dialogue-speaker">Мама</div>
+      <div class="text" id="dialogue-text"></div>
+    </div>
+    <div class="choices" id="choices">
+      <div class="choice good">Сейчас встану</div>
+      <div class="choice bad">Ещё пять минут</div>
+    </div>
+  </div>
+  <!-- Паспорт -->
+  <div id="passport-modal" class="modal" style="display:none;">
+    <img src="pages/passed.jpg" style="width: 100%; border-radius: 12px;" />
+  </div>
+  <!-- Дневник -->
+  <div id="diary-modal" class="modal" style="display:none;">
+    <img src="pages/diar.jpg" style="width: 100%; border-radius: 12px;" />
+  </div>
+  <!-- Подсказка установки -->
+  <div id="install-prompt" class="install-banner" style="display:none;">
+    <p>Добавьте ярлык на рабочий стол, для продолжения игры</p>
+    <button id="install-btn">Добавить</button>
+  </div>
+  <script src="main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker зарегистрирован:', reg.scope))
+        .catch(err => console.log('Ошибка Service Worker:', err));
+    }
+  </script>
+</body>
+</html> 
