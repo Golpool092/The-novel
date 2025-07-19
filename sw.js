@@ -2,11 +2,47 @@ const CACHE_NAME = 'shkola13-v1';
 const urlsToCache = [
   './',
   './index.html',
+  './download.html',
   './style.css',
   './main.js',
+  './story.js',
   './manifest.json',
+
+  // Видео и аудио
+  './Video/Beginning.mp4',
+  './audio/beginning.mp',
+  './audio/dooroff.mp3',
+  './audio/paper.mp3',
+  './audio/fon.mp3',
+
+  // Картинки интерфейса
+  './pages/diary.png',
+  './pages/diar.png',
+  './pages/pass.png',
+  './pages/passed.png',
+  './pages/settings.png',
+
+  // Фоны комнаты
+  './pages/fon1.png',
+  './pages/fon2.png',
+  './pages/fon3.png',
+  './pages/fon4.png',
+
+  // Фоны кухни без еды
+  './pages/fon5.png',
+  './pages/fon6.png',
+  './pages/fon7.png',
+  './pages/fon8.png',
+
+  // Фоны кухни с яичницей
+  './pages/fon5-1.png',
+  './pages/fon6-1.png',
+  './pages/fon7-1.png',
+  './pages/fon8-1.png',
+
+  // Иконки PWA (если есть)
   './pages/icon-192.png',
-  './pages/icon-512.png'
+  './pages/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
@@ -15,14 +51,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(urlsToCache);
     })
   );
-});
-
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
+  self.skipWaiting(); // активировать SW сразу после установки
 });
 
 self.addEventListener('activate', (event) => {
@@ -30,9 +59,32 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) =>
       Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name))
       )
     )
   );
-}); 
+  self.clients.claim(); // контролировать страницы сразу
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      // Возвращаем кеш если есть
+      if (cachedResponse) return cachedResponse;
+      // Иначе делаем запрос в сеть и кешируем ответ
+      return fetch(event.request).then((networkResponse) => {
+        // Если невалидный ответ, просто возвращаем
+        if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+        // Клонируем ответ для кеша
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        return networkResponse;
+      });
+    })
+  );
+});
