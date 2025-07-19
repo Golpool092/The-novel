@@ -217,7 +217,7 @@ function fadeInInterface(location, callback) {
 // Функция обновления фона в зависимости от локации
 function updateBackground(location) {
   if (location === 'kitchen') {
-    gameScreen.style.backgroundImage = 'url("pages/fon3.png")';
+    gameScreen.style.backgroundImage = 'url("pages/fon5-1.png")';
   } else {
     gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
   }
