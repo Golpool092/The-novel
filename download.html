@@ -17,6 +17,7 @@
       color: #f0f0f0;
       font-family: 'Segoe UI', sans-serif;
       overflow-y: auto;
+      display: none;
     }
     body {
       padding: 24px;
@@ -134,13 +135,14 @@
     }
   </style>
   <script>
-  if (!window.matchMedia('(display-mode: standalone)').matches && window.navigator.standalone !== true) {
-    // Не в PWA — показываем страницу
-  } else {
-    // В PWA — сразу кидаем в index.html без показа download
-    location.replace('index.html');
-  }
-</script>
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      if (location.pathname.endsWith('download.html')) {
+        location.replace('index.html');
+      }
+    } else {
+      document.documentElement.style.display = 'block';
+    }
+  </script>
 </head>
 <body>
   <div class="card" role="main" aria-label="Информация об установке Школа №13">
@@ -155,7 +157,7 @@
       </div>
       <h5>ОСТАВИТЬ ОТЗЫВ ИЛИ НАЧАТЬ СЛЕДИТЬ ЗА РАЗРАБОТКОЙ, ВСТУПИТЬ В КОМАНДУ ИЛИ СОТРУДНИЧАТЬ С ИГРОЙ, МОЖНО В НАШЕМ <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>.</h5>
       <div class="buttons">
-        <button id="installBtn" style="display: none;" aria-label="Установить приложение Школа №13">📲 Установить на устройство</button>
+        <button id="installBtn" style="display:none;" aria-label="Установить приложение Школа №13">📲 Установить на устройство</button>
         <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Наш Telegram</a>
       </div>
     </div>
@@ -182,11 +184,6 @@
         deferredPrompt = null;
       });
     });
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-  if (location.pathname.endsWith('download.html')) {
-    location.replace('index.html');
-  }
-}
   </script>
 </body>
 </html>
