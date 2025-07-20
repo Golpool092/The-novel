@@ -5,9 +5,6 @@ html, body {
   height: 100vh;
   font-family: sans-serif;
   background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
   touch-action: none;
   color: white;
@@ -667,4 +664,121 @@ img:focus, button:focus, input:focus, video:focus {
 
 .buttons-group button:hover {
   background-color: #666;
+}
+/* Экран установки */
+#install-screen {
+  display: none;
+  height: 100vh;
+  background: #0e0e0f;
+  color: #f0f0f0;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+#install-screen .card {
+  background: #1a1a1d;
+  border-radius: 20px;
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.5);
+  max-width: 840px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  padding: 24px;
+  gap: 24px;
+  color: #ddd;
+}
+#install-screen .top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+#install-screen .icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #444;
+  flex-shrink: 0;
+}
+#install-screen .text {
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 640px;
+  text-align: center;
+}
+#install-screen .text p {
+  margin-bottom: 12px;
+}
+#install-screen .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  align-items: center;
+}
+#install-screen .buttons button,
+#install-screen .buttons a {
+  background: #29292d;
+  color: #fff;
+  text-align: center;
+  padding: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  border: 1px solid #444;
+  min-width: 180px;
+  cursor: pointer;
+  user-select: none;
+}
+#install-screen .buttons button:hover,
+#install-screen .buttons a:hover {
+  background: #38383d;
+  transform: scale(1.03);
+}
+#install-screen .buttons button:disabled {
+  background: #555;
+  cursor: default;
+  transform: none;
+}
+#install-screen h5 {
+  color: #aaa;
+  max-width: 640px;
+  text-align: center;
+}
+#install-screen a {
+  color: #ffa24b;
+  text-decoration: underline;
+}
+@media (min-width: 640px) {
+  #install-screen .top {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+  #install-screen .icon {
+    margin-right: 20px;
+  }
+  #install-screen .text {
+    text-align: left;
+  }
+  #install-screen .buttons {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  #install-screen .buttons button,
+  #install-screen .buttons a {
+    min-width: 160px;
+  }
+  #install-screen h5 {
+    text-align: left;
+  }
 }

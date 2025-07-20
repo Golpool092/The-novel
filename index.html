@@ -11,134 +11,198 @@
   <meta name="theme-color" content="#111111" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+ 
 </head>
 <body>
-  <div class="orientation-warning">
-    <div class="rotate-icon">🔄</div>
-    Пожалуйста, переверни телефон в горизонтальное положение
-  </div>
-
-  <!-- Фоновая музыка -->
-  <audio id="bg-music" src="audio/fon.mp3" loop></audio>
-
-  <!-- Стартовый экран -->
-  <div id="start-screen" class="start-screen">
-    <div class="menu-buttons">
-      <button id="play-btn" class="play-btn">ИГРАТЬ</button>
-      <button id="settings-menu-btn" class="settings-menu-btn">НАСТРОЙКИ</button>
-    </div>
-  </div>
-
-  <!-- Видео заставка -->
-  <div id="video-container" class="video-container">
-    <video id="intro-video" class="intro-video" playsinline muted>
-      <source src="video/beginning.mp4" type="video/mp4" />
-    </video>
-    <audio id="intro-audio" src="audio/beginning.mp3"></audio>
-    <div class="skip-prompt top-right">Нажмите, чтобы пропустить</div>
-  </div>
-
-  <!-- Основной игровой экран -->
-  <div class="static-screen" id="game-screen">
-    <div class="screen-overlay"></div>
-
-    <div class="left-panel">
-      <img id="passport-button" src="pages/pass.png" alt="Паспорт" />
-      <img id="diary-button" src="pages/diary.png" alt="Дневник" />
-    </div>
-
-    <div class="hud">
-      <img id="settings-btn" src="pages/settings.png" alt="Настройки" />
-      <div class="stats-column">
-        <div class="stat">РЕПУТАЦИЯ
-          <div class="progress"><div class="progress-fill rep"></div></div>
-        </div>
-        <div class="stat">ДРУЖБА
-          <div class="progress"><div class="progress-fill frnd"></div></div>
-        </div>
-        <div class="stat">ЗНАНИЯ
-          <div class="progress"><div class="progress-fill knwl"></div></div>
+  <!-- Экран установки -->
+  <div id="install-screen" role="main" aria-label="Информация об установке Школа №13">
+    <div class="card">
+      <div class="top">
+        <img src="pages/dowicon.png" alt="Иконка новеллы" class="icon" />
+        <div class="text">
+          <p><strong>Визуальная новелла «Школа №13»</strong> сейчас находится в бета-тестировании — мы активно дорабатываем сюжет, персонажей и интерфейс. Следите за обновлениями и новостями в нашем <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>, где вы всегда узнаете о свежих главах, новых функциях и эксклюзивных материалах.</p>
+          <p>В игре вас ждут живые, многогранные персонажи с уникальными историями: от строгой, но справедливой мамы до загадочных одноклассников с собственными тайнами. Каждое ваше решение влияет на развитие сюжета, отношения и судьбу героя.</p>
+          <p><strong>Почему стоит выбрать именно нас?</strong> Мы предлагаем глубокий сюжет, интерактивность без шаблонов и атмосферу настоящей школы с её радостями и трудностями. Ваш выбор — ключ к уникальному игровому опыту. Присоединяйтесь, чтобы стать частью этой истории и помочь нам сделать её лучше!</p>
         </div>
       </div>
-      <div class="money">Баланс: <span id="money-amount">150</span> ₽</div>
-    </div>
-
-    <div class="dialogue">
-      <div class="speaker" id="dialogue-speaker">Мама</div>
-      <div class="text" id="dialogue-text"></div>
-    </div>
-
-    <div class="choices" id="choices">
-      <div class="choice good">Сейчас встану</div>
-      <div class="choice bad">Ещё пять минут</div>
+      <h5>ОСТАВИТЬ ОТЗЫВ ИЛИ НАЧАТЬ СЛЕДИТЬ ЗА РАЗРАБОТКОЙ, ВСТУПИТЬ В КОМАНДУ ИЛИ СОТРУДНИЧАТЬ С ИГРОЙ, МОЖНО В НАШЕМ <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>.</h5>
+      <div class="buttons">
+        <button id="installBtn" aria-label="Установить приложение Школа №13" disabled>📲 Установить на устройство</button>
+        <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Наш Telegram</a>
+      </div>
     </div>
   </div>
 
-  <!-- Модальные окна -->
-  <div id="passport-modal" class="modal">
-    <img src="pages/passed.png" class="modal-image" />
-  </div>
-
-  <div id="diary-modal" class="modal">
-    <img src="pages/diar.png" class="modal-image" />
-  </div>
-
-  <div id="name-modal" class="modal">
-    <div class="name-input-container">
-      <h3>ВВЕДИТЕ ВАШЕ ИМЯ</h3>
-      <input type="text" id="player-name" placeholder="Ваше имя" maxlength="12" required />
-      <div id="name-error" class="error-message"></div>
-      <button id="name-submit">НАЧАТЬ ИГРУ</button>
+  <!-- ИГРА -->
+  <div id="game-wrapper" style="display:none;">
+    <div class="orientation-warning">
+      <div class="rotate-icon">🔄</div>
+      Пожалуйста, переверни телефон в горизонтальное положение
     </div>
-  </div>
 
-  <div id="settings-modal" class="modal">
-  <div class="settings-content">
-    <h3>НАСТРОЙКИ</h3>
-    <div class="settings-scroll">
-      <div class="setting-item">
-        <label>Громкость: <span id="volume-value">100%</span></label>
-        <input type="range" id="volume-slider" min="0" max="100" value="100" />
-      </div>
-      <div class="setting-item">
-        <label>Скорость текста</label>
-        <input type="range" id="text-speed" min="20" max="100" value="60" />
-      </div>
-      <div class="setting-item">
-        <label>Яркость экрана</label>
-        <input type="range" id="brightness" min="50" max="100" value="100" />
-      </div>
-      <div class="setting-item">
-        <label>
-          <input type="checkbox" id="toggle-sound" checked />
-          Звук эффектов
-        </label>
-      </div>
-      <div class="setting-item">
-        <label>
-          <input type="checkbox" id="toggle-music" checked />
-          Музыка
-        </label>
-      </div>
-      <div class="setting-item">
-        <label>
-          <input type="checkbox" id="toggle-subtitles" checked />
-          Субтитры
-        </label>
+    <!-- Фоновая музыка -->
+    <audio id="bg-music" src="audio/fon.mp3" loop></audio>
+
+    <!-- Стартовый экран -->
+    <div id="start-screen" class="start-screen">
+      <div class="menu-buttons">
+        <button id="play-btn" class="play-btn">ИГРАТЬ</button>
+        <button id="settings-menu-btn" class="settings-menu-btn">НАСТРОЙКИ</button>
       </div>
     </div>
-    <div class="buttons-group">
-      <button id="settings-close">ЗАКРЫТЬ</button>
-      <button id="return-main">В ГЛАВНОЕ МЕНЮ</button>
-      <button id="reset-progress">СБРОСИТЬ ПРОГРЕСС</button>
+
+    <!-- Видео заставка -->
+    <div id="video-container" class="video-container">
+      <video id="intro-video" class="intro-video" playsinline muted>
+        <source src="video/beginning.mp4" type="video/mp4" />
+      </video>
+      <audio id="intro-audio" src="audio/beginning.mp3"></audio>
+      <div class="skip-prompt top-right">Нажмите, чтобы пропустить</div>
     </div>
-  </div>
-</div>
 
-  <div id="install-prompt" class="install-banner">
+    <!-- Основной игровой экран -->
+    <div class="static-screen" id="game-screen">
+      <div class="screen-overlay"></div>
+
+      <div class="left-panel">
+        <img id="passport-button" src="pages/pass.png" alt="Паспорт" />
+        <img id="diary-button" src="pages/diary.png" alt="Дневник" />
+      </div>
+
+      <div class="hud">
+        <img id="settings-btn" src="pages/settings.png" alt="Настройки" />
+        <div class="stats-column">
+          <div class="stat">РЕПУТАЦИЯ
+            <div class="progress"><div class="progress-fill rep"></div></div>
+          </div>
+          <div class="stat">ДРУЖБА
+            <div class="progress"><div class="progress-fill frnd"></div></div>
+          </div>
+          <div class="stat">ЗНАНИЯ
+            <div class="progress"><div class="progress-fill knwl"></div></div>
+          </div>
+        </div>
+        <div class="money">Баланс: <span id="money-amount">150</span> ₽</div>
+      </div>
+
+      <div class="dialogue">
+        <div class="speaker" id="dialogue-speaker">Мама</div>
+        <div class="text" id="dialogue-text"></div>
+      </div>
+
+      <div class="choices" id="choices">
+        <div class="choice good">Сейчас встану</div>
+        <div class="choice bad">Ещё пять минут</div>
+      </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="passport-modal" class="modal">
+      <img src="pages/passed.png" class="modal-image" />
+    </div>
+
+    <div id="diary-modal" class="modal">
+      <img src="pages/diar.png" class="modal-image" />
+    </div>
+
+    <div id="name-modal" class="modal">
+      <div class="name-input-container">
+        <h3>ВВЕДИТЕ ВАШЕ ИМЯ</h3>
+        <input type="text" id="player-name" placeholder="Ваше имя" maxlength="12" required />
+        <div id="name-error" class="error-message"></div>
+        <button id="name-submit">НАЧАТЬ ИГРУ</button>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+      <div class="settings-content">
+        <h3>НАСТРОЙКИ</h3>
+        <div class="settings-scroll">
+          <div class="setting-item">
+            <label>Громкость: <span id="volume-value">100%</span></label>
+            <input type="range" id="volume-slider" min="0" max="100" value="100" />
+          </div>
+          <div class="setting-item">
+            <label>Скорость текста</label>
+            <input type="range" id="text-speed" min="20" max="100" value="60" />
+          </div>
+          <div class="setting-item">
+            <label>Яркость экрана</label>
+            <input type="range" id="brightness" min="50" max="100" value="100" />
+          </div>
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="toggle-sound" checked />
+              Звук эффектов
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="toggle-music" checked />
+              Музыка
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="toggle-subtitles" checked />
+              Субтитры
+            </label>
+          </div>
+        </div>
+        <div class="buttons-group">
+          <button id="settings-close">ЗАКРЫТЬ</button>
+          <button id="return-main">В ГЛАВНОЕ МЕНЮ</button>
+          <button id="reset-progress">СБРОСИТЬ ПРОГРЕСС</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="install-prompt" class="install-banner"></div>
+
+    <audio id="paper-sound" src="audio/paper.mp3"></audio>
   </div>
 
-  <audio id="paper-sound" src="audio/paper.mp3"></audio>
+  <script>
+    // Показывать экран установки если не standalone
+    function isStandalone() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    const installScreen = document.getElementById('install-screen');
+    const gameWrapper = document.getElementById('game-wrapper');
+    const installBtn = document.getElementById('installBtn');
+
+    // Скрыть игру и показать экран установки, если не standalone
+    if (isStandalone()) {
+      installScreen.style.display = 'none';
+      gameWrapper.style.display = 'block';
+    } else {
+      installScreen.style.display = 'flex';
+      gameWrapper.style.display = 'none';
+      document.documentElement.style.display = 'block'; // На случай, если нужно показать body
+    }
+
+    // Обработка beforeinstallprompt
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.disabled = false;
+      installBtn.style.display = 'inline-block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult.outcome === 'accepted') {
+        installBtn.textContent = '✅ Установлено';
+        installBtn.disabled = true;
+      }
+      deferredPrompt = null;
+    });
+  </script>
 
   <script src="main.js"></script>
   <script src="story.js"></script>
