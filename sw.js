@@ -2,7 +2,6 @@ const CACHE_NAME = 'shkola13-v1';
 const urlsToCache = [
   './',
   './index.html',
-  './download.html',
   './style.css',
   './main.js',
   './story.js',
@@ -31,7 +30,7 @@ const urlsToCache = [
   './pages/fon8-1.png',
   './pages/icon-192.png',
   './pages/icon-512.png',
-];
+];'./pages/dowicon.png'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
