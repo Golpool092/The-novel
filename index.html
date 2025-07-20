@@ -26,7 +26,7 @@
       </div>
       <h5>ОСТАВИТЬ ОТЗЫВ ИЛИ НАЧАТЬ СЛЕДИТЬ ЗА РАЗРАБОТКОЙ, ВСТУПИТЬ В КОМАНДУ ИЛИ СОТРУДНИЧАТЬ С ИГРОЙ, МОЖНО В НАШЕМ <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>.</h5>
       <div class="buttons">
-        <button id="installBtn" aria-label="Установить приложение Школа №13" disabled>📲 Установить на устройство</button>
+        <button id="installBtn" aria-label="Установить приложение Школа №13">📲 Установить на устройство</button>
         <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Наш Telegram</a>
       </div>
     </div>
@@ -141,91 +141,60 @@
       </div>
     </div>
 
-    <div id="install-prompt" class="install-banner"></div>
-
     <audio id="paper-sound" src="audio/paper.mp3"></audio>
   </div>
 
 <script>
-let deferredPrompt = null
-const installBtn = document.getElementById('installBtn')
-const installScreen = document.getElementById('install-screen')
-const gameWrapper = document.getElementById('game-wrapper')
+let deferredPrompt = null;
+const installBtn = document.getElementById('installBtn');
+const installScreen = document.getElementById('install-screen');
+const gameWrapper = document.getElementById('game-wrapper');
 
 function isPWA() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
 if (isPWA()) {
-  installScreen.style.display = 'none'
-  gameWrapper.style.display = 'block'
+  installScreen.style.display = 'none';
+  gameWrapper.style.display = 'block';
 } else {
-  installScreen.style.display = 'block'
-  gameWrapper.style.display = 'none'
+  installScreen.style.display = 'block';
+  gameWrapper.style.display = 'none';
 }
 
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault()
-  deferredPrompt = e
-  installBtn.disabled = false
-})
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.disabled = false;
+});
 
 installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return
-  deferredPrompt.prompt()
-  const result = await deferredPrompt.userChoice
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const result = await deferredPrompt.userChoice;
   if (result.outcome === 'accepted') {
-    installBtn.textContent = '✅ Установлено'
-    installBtn.disabled = true
-    location.reload()
+    installBtn.textContent = '✅ Установлено';
+    installBtn.disabled = true;
+    location.reload();
   }
-  deferredPrompt = null
-})
+  deferredPrompt = null;
+});
 </script>
 
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(reg => {
-      console.log('Service Worker зарегистрирован:', reg.scope)
+      console.log('Service Worker зарегистрирован:', reg.scope);
     }).catch(err => {
-      console.error('Ошибка регистрации Service Worker:', err)
-    })
-  })
+      console.error('Ошибка регистрации Service Worker:', err);
+    });
+  });
 }
 </script>
 
 <script src="main.js"></script>
 <script src="story.js"></script>
-<script>
-const playBtn = document.getElementById('play-btn')
-const settingsBtn = document.getElementById('settings-menu-btn')
-const bgMusic = document.getElementById('bg-music')
 
-function checkFocusAndPWA() {
-  const inPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
-  const inFocus = document.hasFocus()
-
-  if (!inPWA || !inFocus) {
-    playBtn.style.display = 'none'
-    settingsBtn.style.display = 'none'
-    if (!bgMusic.paused) bgMusic.pause()
-  } else {
-    playBtn.style.display = ''
-    settingsBtn.style.display = ''
-    if (document.body.classList.contains('game-started') && document.getElementById('toggle-music').checked) {
-      bgMusic.play().catch(() => {}) // Обход ошибки play()
-    }
-  }
-}
-
-// Следим за возвратом/сворачиванием
-window.addEventListener('visibilitychange', checkFocusAndPWA)
-window.addEventListener('focus', checkFocusAndPWA)
-window.addEventListener('blur', checkFocusAndPWA)
-
-
-document.getElementById('name-submit').addEventListener('click', () => {
-  document
 </body>
 </html>
