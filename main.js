@@ -8,6 +8,7 @@ let isTyping = false;
 let currentText = '';
 let currentCallback = null;
 let startGameStarted = false;
+let typingTimeout = null;
 let gameState = {
   reputation: 40,
   friendship: 50,
@@ -49,9 +50,21 @@ const toggleMusic = document.getElementById('toggle-music');
 const toggleSubtitles = document.getElementById('toggle-subtitles');
 const returnMainBtn = document.getElementById('return-main');
 
+const settingsBtn = document.getElementById('settings-btn');
+
 const modalBackdrop = document.createElement('div');
 modalBackdrop.className = 'modal-backdrop';
 document.body.appendChild(modalBackdrop);
+
+document.documentElement.style.userSelect = 'none';
+document.documentElement.style.webkitUserSelect = 'none';
+document.documentElement.style.MozUserSelect = 'none';
+document.documentElement.style.msUserSelect = 'none';
+document.documentElement.style.webkitTouchCallout = 'none';
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('mousedown', e => e.preventDefault());
 
 function clearChoices() {
   while (choicesContainer.firstChild) {
@@ -71,24 +84,27 @@ function closeAllModals() {
   document.body.classList.remove('modal-open');
 }
 
-function showText(text, callback) {
-  if (isTyping) {
-    dialogueText.textContent = currentText;
-    isTyping = false;
-    clearChoices();
-    if (currentCallback) currentCallback();
-    return;
+function stopTyping() {
+  if (typingTimeout) {
+    clearTimeout(typingTimeout);
+    typingTimeout = null;
   }
+  isTyping = false;
+}
+
+function showText(text, callback) {
+  stopTyping();
   currentText = text;
   currentCallback = callback;
   isTyping = true;
   dialogueText.textContent = '';
   let i = 0;
   function type() {
-    if (i < text.length && isTyping) {
+    if (!isTyping) return;
+    if (i < text.length) {
       dialogueText.textContent = text.substring(0, i + 1);
       i++;
-      setTimeout(type, textSpeed);
+      typingTimeout = setTimeout(type, textSpeed);
     } else {
       isTyping = false;
       if (callback) callback();
@@ -99,8 +115,8 @@ function showText(text, callback) {
 
 dialogueText.addEventListener('click', () => {
   if (isTyping) {
+    stopTyping();
     dialogueText.textContent = currentText;
-    isTyping = false;
     clearChoices();
     if (currentCallback) currentCallback();
   } else if (currentCallback) {
@@ -114,6 +130,10 @@ function applySoundSetting() {
 
 function applyMusicSetting() {
   introAudio.muted = !musicEnabled;
+  if (!startGameStarted) {
+    bgMusic.pause();
+    return;
+  }
   if (musicEnabled) {
     bgMusic.play().catch(() => {});
   } else {
@@ -147,7 +167,7 @@ function initGame() {
     gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
   }
   startStory();
-  document.getElementById('passport-button').addEventListener('click', () => {
+  document.getElementById('passport-button').onclick = () => {
     if (passportOpen) {
       closeAllModals();
     } else {
@@ -160,8 +180,8 @@ function initGame() {
       paperSound.muted = !soundEnabled;
       paperSound.play();
     }
-  });
-  document.getElementById('diary-button').addEventListener('click', () => {
+  };
+  document.getElementById('diary-button').onclick = () => {
     if (diaryOpen) {
       closeAllModals();
     } else {
@@ -174,13 +194,13 @@ function initGame() {
       paperSound.muted = !soundEnabled;
       paperSound.play();
     }
-  });
-  modalBackdrop.addEventListener('click', () => {
+  };
+  modalBackdrop.onclick = () => {
     if (settingsOpen) {
       closeAllModals();
     }
-  });
-  document.getElementById('settings-btn').addEventListener('click', () => {
+  };
+  settingsBtn.onclick = () => {
     if (settingsOpen) {
       closeAllModals();
     } else {
@@ -189,7 +209,7 @@ function initGame() {
       modalBackdrop.style.display = 'block';
       document.body.classList.add('modal-open');
     }
-  });
+  };
 }
 
 function updateUI() {
@@ -244,17 +264,20 @@ function checkOrientation() {
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
 
-
-playBtn.addEventListener('click', () => {
+playBtn.onclick = () => {
   startScreen.style.display = 'none';
   videoContainer.style.display = 'flex';
-  introVideo.play();
+  introVideo.play().catch(() => {});
   introAudio.volume = audioVolume;
   introAudio.muted = !musicEnabled;
-  introAudio.play();
-  introVideo.addEventListener('click', startGame);
-  introVideo.addEventListener('ended', startGame);
-});
+  introAudio.play().catch(() => {});
+  introVideo.onclick = () => {
+    if (!startGameStarted) startGame();
+  };
+  introVideo.onended = () => {
+    if (!startGameStarted) startGame();
+  };
+};
 
 function startGame() {
   if (startGameStarted) return;
@@ -264,14 +287,12 @@ function startGame() {
   videoContainer.style.display = "none";
   nameModal.style.display = "flex";
   nameInput.value = playerName;
-  if (musicEnabled) {
-    bgMusic.volume = audioVolume;
-    bgMusic.loop = true;
-    bgMusic.play().catch(() => {});
-  }
+  applyMusicSetting();
+  bgMusic.volume = audioVolume;
+  bgMusic.loop = true;
 }
 
-nameSubmit.addEventListener('click', () => {
+nameSubmit.onclick = () => {
   if (nameInput.value.trim() !== '') {
     playerName = nameInput.value.trim();
     localStorage.setItem('school13_playerName', playerName);
@@ -279,7 +300,7 @@ nameSubmit.addEventListener('click', () => {
   nameModal.style.display = "none";
   gameScreen.style.display = "block";
   initGame();
-});
+};
 
 function changeBackground(newBackgroundUrl, callback) {
   screenOverlay.style.transition = 'opacity 0.7s';
@@ -297,7 +318,7 @@ function changeBackground(newBackgroundUrl, callback) {
   };
 }
 
-volumeSlider.addEventListener('input', () => {
+volumeSlider.oninput = () => {
   audioVolume = volumeSlider.value / 100;
   volumeValue.textContent = `${volumeSlider.value}%`;
   introAudio.volume = audioVolume;
@@ -305,47 +326,68 @@ volumeSlider.addEventListener('input', () => {
   bgMusic.volume = audioVolume;
   doorOffSound.volume = audioVolume;
   localStorage.setItem('school13_audioVolume', audioVolume);
-});
+};
 
-textSpeedSlider.addEventListener('input', () => {
+textSpeedSlider.oninput = () => {
   textSpeed = 120 - textSpeedSlider.value;
   localStorage.setItem('school13_textSpeed', textSpeed);
-});
+};
 
-brightnessSlider.addEventListener('input', () => {
-  document.documentElement.style.filter = `brightness(${brightnessSlider.value}%)`;
-  localStorage.setItem('school13_brightness', brightnessSlider.value);
-});
+brightnessSlider.oninput = () => {
+  let val = brightnessSlider.value;
+  document.documentElement.style.filter = `brightness(${val}%)`;
+  localStorage.setItem('school13_brightness', val);
+};
 
-resetProgressBtn.addEventListener('click', resetProgress);
-settingsClose.addEventListener('click', closeAllModals);
+resetProgressBtn.onclick = resetProgress;
+settingsClose.onclick = closeAllModals;
 
 document.getElementById('settings-menu-btn').onclick = () => {
+  settingsOpen = true;
   document.getElementById('settings-modal').style.display = 'flex';
   modalBackdrop.style.display = 'block';
   document.body.classList.add('modal-open');
 };
 
-returnMainBtn.addEventListener('click', () => {
+returnMainBtn.onclick = () => {
   closeAllModals();
   gameScreen.style.display = 'none';
   startScreen.style.display = 'flex';
-});
+  startGameStarted = false;
+  bgMusic.pause();
+};
 
-if (toggleSound) toggleSound.addEventListener('change', e => {
+if (toggleSound) toggleSound.onchange = e => {
   soundEnabled = e.target.checked;
   localStorage.setItem('soundEnabled', soundEnabled);
   applySoundSetting();
-});
-if (toggleMusic) toggleMusic.addEventListener('change', e => {
+};
+
+if (toggleMusic) toggleMusic.onchange = e => {
   musicEnabled = e.target.checked;
   localStorage.setItem('musicEnabled', musicEnabled);
   applyMusicSetting();
-});
-if (toggleSubtitles) toggleSubtitles.addEventListener('change', e => {
+};
+
+if (toggleSubtitles) toggleSubtitles.onchange = e => {
   subtitlesEnabled = e.target.checked;
   localStorage.setItem('subtitlesEnabled', subtitlesEnabled);
   applySubtitlesSetting();
+};
+
+window.addEventListener('visibilitychange', () => {
+  const inPWA = window.matchMedia('(display-mode: standalone)').matches;
+  if (document.hidden) {
+    playBtn.style.display = 'none';
+    settingsBtn.style.display = 'none';
+    bgMusic.pause();
+  } else {
+    playBtn.style.display = startGameStarted ? 'none' : 'block';
+    settingsBtn.style.display = startGameStarted ? 'block' : 'none';
+    if (startGameStarted && musicEnabled && inPWA) {
+      bgMusic.play().catch(() => {});
+    }
+  }
 });
 
 window.addEventListener('load', () => {
@@ -368,3 +410,7 @@ window.addEventListener('load', () => {
   }
   initSettings();
 });
+
+settingsModal.style.overflowY = 'auto';
+settingsModal.style.paddingTop = '10px';
+settingsModal.style.paddingBottom = '10px';
