@@ -162,47 +162,29 @@
     <audio id="paper-sound" src="audio/paper.mp3"></audio>
   </div>
 
-  <script>
-    // Показывать экран установки если не standalone
-    function isStandalone() {
-      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+<script>
+  const installBtn = document.getElementById('installBtn');
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.disabled = false;
+    installBtn.style.display = 'inline-block';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choiceResult = await deferredPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') {
+      installBtn.textContent = '✅ Установлено';
+      installBtn.disabled = true;
+      installBtn.style.cursor = 'default';
     }
-
-    const installScreen = document.getElementById('install-screen');
-    const gameWrapper = document.getElementById('game-wrapper');
-    const installBtn = document.getElementById('installBtn');
-
-    // Скрыть игру и показать экран установки, если не standalone
-    if (isStandalone()) {
-      installScreen.style.display = 'none';
-      gameWrapper.style.display = 'block';
-    } else {
-      installScreen.style.display = 'flex';
-      gameWrapper.style.display = 'none';
-      document.documentElement.style.display = 'block'; // На случай, если нужно показать body
-    }
-
-    // Обработка beforeinstallprompt
-    let deferredPrompt = null;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.disabled = false;
-      installBtn.style.display = 'inline-block';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        installBtn.textContent = '✅ Установлено';
-        installBtn.disabled = true;
-      }
-      deferredPrompt = null;
-    });
-  </script>
+    deferredPrompt = null;
+  });
+</script>
 
   <script src="main.js"></script>
   <script src="story.js"></script>

@@ -458,7 +458,7 @@ html, body {
   display: none;
 }
 
-#install-btn {
+#installBtn {
   padding: 6px 12px;
   background: #28a745;
   color: white;
@@ -466,7 +466,7 @@ html, body {
   border-radius: 8px;
   cursor: pointer;
 }
-#install-btn:focus {
+#installBtn:focus {
   outline: none;
 }
 
