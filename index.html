@@ -185,8 +185,21 @@
     deferredPrompt = null;
   });
 </script>
+<script>
+  // ...твой код с installBtn и beforeinstallprompt
 
-  <script src="main.js"></script>
-  <script src="story.js"></script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('Service Worker зарегистрирован:', reg.scope);
+      }).catch(err => {
+        console.error('Ошибка регистрации Service Worker:', err);
+      });
+    });
+  }
+</script>
+
+<script src="main.js"></script>
+<script src="story.js"></script>
 </body>
 </html>
