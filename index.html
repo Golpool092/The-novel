@@ -13,12 +13,21 @@
     const installBtn = document.getElementById('installBtn');
     let deferredPrompt;
 
+    // Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('SW зарегистрирован:', reg.scope))
+        .catch(err => console.error('Ошибка регистрации SW:', err));
+    }
+
+    // Событие перед установкой
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBtn.disabled = false;
     });
 
+    // Кнопка установки
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
@@ -29,17 +38,6 @@
       }
       deferredPrompt = null;
     });
-
-    // Отобразить статус service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then(reg => {
-        if (reg) {
-          console.log('SW зарегистрирован:', reg.scope);
-        } else {
-          console.log('SW не зарегистрирован');
-        }
-      });
-    }
   </script>
 </body>
 </html>
