@@ -6,7 +6,7 @@ const urlsToCache = [
   './main.js',
   './story.js',
   './manifest.json',
-  './Video/beginning.mp4',
+  './video/beginning.mp4',
   './audio/beginning.mp3',
   './audio/dooroff.mp3',
   './audio/paper.mp3',
@@ -76,3 +76,4 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
