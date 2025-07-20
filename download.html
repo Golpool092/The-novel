@@ -1,198 +1,192 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>Школа №13 — Скачать PWA</title>
-<link rel="icon" href="pages/dowicon.png" />
-<style>
-  /* твои стили без изменений */
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-  body {
-    margin: 0; padding: 0;
-    background: #fff7f0;
-    font-family: 'Montserrat', sans-serif;
-    color: #4a3a2d;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>Установка — Школа №13</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      background: #0e0e0f;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-y: auto;
+    }
+    body {
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .card {
+      background: #1a1a1d;
+      border-radius: 20px;
+      box-shadow: 0 0 32px rgba(0, 0, 0, 0.5);
+      max-width: 840px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      padding: 24px;
+      gap: 24px;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 16px;
+      object-fit: cover;
+      background: #444;
+      flex-shrink: 0;
+    }
+    .text {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #ddd;
+      max-width: 640px;
+      text-align: center;
+    }
+    .text p {
+      margin-bottom: 12px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+      align-items: center;
+    }
+    .buttons button,
+    .buttons a {
+      background: #29292d;
+      color: #fff;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s ease;
+      border: 1px solid #444;
+      min-width: 180px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .buttons button:hover,
+    .buttons a:hover {
+      background: #38383d;
+      transform: scale(1.03);
+    }
+    .buttons button:disabled {
+      background: #555;
+      cursor: default;
+      transform: none;
+    }
+    h5 {
+      color: #aaa;
+      max-width: 640px;
+      text-align: center;
+    }
+    a {
+      color: #ffa24b;
+      text-decoration: underline;
+    }
+    @media (min-width: 640px) {
+      .top {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .icon {
+        margin-right: 20px;
+      }
+      .text {
+        text-align: left;
+      }
+      .buttons {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      .buttons button,
+      .buttons a {
+        min-width: 160px;
+      }
+      h5 {
+        text-align: left;
+      }
+    }
+  </style>
+  <script>
+  if (!window.matchMedia('(display-mode: standalone)').matches && window.navigator.standalone !== true) {
+    // Не в PWA — показываем страницу
+  } else {
+    // В PWA — сразу кидаем в index.html без показа download
+    location.replace('index.html');
   }
-  header {
-    background: #f97316;
-    width: 100%;
-    padding: 30px 0;
-    box-shadow: 0 4px 15px rgb(249 115 22 / 0.35);
-    text-align: center;
-  }
-  header img {
-    width: 64px;
-    height: 64px;
-    vertical-align: middle;
-    margin-bottom: 10px;
-  }
-  header h1 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 2.8rem;
-    color: white;
-    user-select: none;
-  }
-  main {
-    max-width: 420px;
-    width: 90%;
-    margin: 35px auto 80px;
-    text-align: center;
-  }
-  main p.description {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    user-select: text;
-  }
-  main p.description a {
-    color: #f97316;
-    font-weight: 700;
-    text-decoration: none;
-  }
-  main p.description a:hover,
-  main p.description a:focus {
-    text-decoration: underline;
-  }
-  button {
-    background-color: #f97316;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.4rem;
-    padding: 18px 60px;
-    margin: 14px 0;
-    cursor: pointer;
-    box-shadow: 0 7px 15px rgb(249 115 22 / 0.7);
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  button:hover:not(:disabled) {
-    background-color: #d95f05;
-  }
-  button:disabled {
-    background-color: #fbbf93;
-    cursor: default;
-    box-shadow: none;
-  }
-  #feedback-modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.3);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  #feedback-modal.active {
-    display: flex;
-  }
-  #feedback-modal .modal-content {
-    background: #fff7f0;
-    padding: 32px 28px;
-    border-radius: 14px;
-    max-width: 320px;
-    width: 90%;
-    box-shadow: 0 8px 20px rgb(0 0 0 / 0.25);
-    user-select: none;
-    text-align: center;
-  }
-  #feedback-modal .modal-content p {
-    font-size: 1rem;
-    color: #4a3a2d;
-    margin-bottom: 24px;
-  }
-</style>
+</script>
 </head>
 <body>
-
-<header>
-  <img src="pages/dowicon.png" alt="Логотип Школа №13" />
-  <h1>Школа №13</h1>
-</header>
-
-<main>
-  <p class="description">
-    Визуальная новелла «Школа №13» в бета-тестировании — мы дорабатываем сюжет, персонажей и интерфейс.<br>
-    Следите за обновлениями в нашем <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">официальном Telegram-канале</a>.<br><br>
-    Вас ждут живые персонажи с уникальными историями. Ваш выбор влияет на сюжет и судьбу героя.<br><br>
-    Почему выбрать нас? Глубокий сюжет, интерактивность без шаблонов и атмосфера настоящей школы.
-  </p>
-
-  <button id="install-btn" aria-label="Установить приложение">Установить приложение</button><br>
-
-  <button id="feedback-btn" aria-label="Оставить отзыв">Оставить отзыв</button>
-</main>
-
-<div id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
-  <div class="modal-content">
-    <p id="feedback-title">Игра в стадии разработки.<br>Оставить отзыв пока невозможно, но вы можете написать нам в Telegram-канал.</p>
-    <button id="feedback-close-btn" aria-label="Закрыть">Закрыть</button>
+  <div class="card" role="main" aria-label="Информация об установке Школа №13">
+    <div class="content">
+      <div class="top">
+        <img src="pages/diwicon.png" alt="Иконка новеллы" class="icon" />
+        <div class="text">
+          <p><strong>Визуальная новелла «Школа №13»</strong> сейчас находится в бета-тестировании — мы активно дорабатываем сюжет, персонажей и интерфейс. Следите за обновлениями и новостями в нашем <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>, где вы всегда узнаете о свежих главах, новых функциях и эксклюзивных материалах.</p>
+          <p>В игре вас ждут живые, многогранные персонажи с уникальными историями: от строгой, но справедливой мамы до загадочных одноклассников с собственными тайнами. Каждое ваше решение влияет на развитие сюжета, отношения и судьбу героя.</p>
+          <p><strong>Почему стоит выбрать именно нас?</strong> Мы предлагаем глубокий сюжет, интерактивность без шаблонов и атмосферу настоящей школы с её радостями и трудностями. Ваш выбор — ключ к уникальному игровому опыту. Присоединяйтесь, чтобы стать частью этой истории и помочь нам сделать её лучше!</p>
+        </div>
+      </div>
+      <h5>ОСТАВИТЬ ОТЗЫВ ИЛИ НАЧАТЬ СЛЕДИТЬ ЗА РАЗРАБОТКОЙ, ВСТУПИТЬ В КОМАНДУ ИЛИ СОТРУДНИЧАТЬ С ИГРОЙ, МОЖНО В НАШЕМ <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Telegram-канале</a>.</h5>
+      <div class="buttons">
+        <button id="installBtn" style="display: none;" aria-label="Установить приложение Школа №13">📲 Установить на устройство</button>
+        <a href="https://t.me/NovelaSchool" target="_blank" rel="noopener noreferrer">Наш Telegram</a>
+      </div>
+    </div>
   </div>
-</div>
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
 
-<script>
-  // Регистрация service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => {
-      console.log('Service Worker зарегистрирован');
-    }).catch(console.error);
-  }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+      installBtn.disabled = false;
+    });
 
-  let deferredPrompt = null;
-  const installBtn = document.getElementById('install-btn');
-  const feedbackBtn = document.getElementById('feedback-btn');
-  const feedbackModal = document.getElementById('feedback-modal');
-  const feedbackCloseBtn = document.getElementById('feedback-close-btn');
-
-  // НЕ скрываем кнопку — показываем всегда
-
-  // Ловим событие beforeinstallprompt для PWA
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    console.log('PWA доступно к установке');
-  });
-
-  installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
+    installBtn.addEventListener('click', () => {
+      if (!deferredPrompt) return;
       deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('Пользователь установил приложение');
-        installBtn.disabled = true;
-      } else {
-        console.log('Пользователь отменил установку');
-      }
-      deferredPrompt = null;
-    } else {
-      alert('Установка приложения недоступна.\n\nВозможно, вы уже установили приложение, или ваш браузер не поддерживает установку.');
-    }
-  });
-
-  // Кнопка "Оставить отзыв"
-  feedbackBtn.addEventListener('click', () => {
-    feedbackModal.classList.add('active');
-  });
-
-  // Закрытие модального окна
-  feedbackCloseBtn.addEventListener('click', () => {
-    feedbackModal.classList.remove('active');
-  });
-
-  // Закрыть модал по клику вне содержимого
-  feedbackModal.addEventListener('click', (e) => {
-    if (e.target === feedbackModal) {
-      feedbackModal.classList.remove('active');
-    }
-  });
-</script>
-
+      deferredPrompt.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === 'accepted') {
+          installBtn.textContent = '✅ Установлено';
+          installBtn.disabled = true;
+        }
+        deferredPrompt = null;
+      });
+    });
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+  if (location.pathname.endsWith('download.html')) {
+    location.replace('index.html');
+  }
+}
+  </script>
 </body>
 </html>
