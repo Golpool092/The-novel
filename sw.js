@@ -6,7 +6,7 @@ const urlsToCache = [
   './main.js',
   './story.js',
   './manifest.json',
-  './Video/Beginning.mp4',
+  './Video/beginning.mp4',
   './audio/beginning.mp3',
   './audio/dooroff.mp3',
   './audio/paper.mp3',
@@ -30,7 +30,8 @@ const urlsToCache = [
   './pages/fon8-1.png',
   './pages/icon-192.png',
   './pages/icon-512.png',
-];'./pages/dowicon.png'
+  './pages/dowicon.png'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
