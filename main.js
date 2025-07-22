@@ -6,6 +6,7 @@ let textSpeed = 40;
 let audioVolume = 1.0;
 let isTyping = false;
 let currentText = '';
+let currentSpeaker = '';
 let currentCallback = null;
 let startGameStarted = false;
 let typingTimeout = null;
@@ -22,7 +23,11 @@ let musicEnabled = true;
 let subtitlesEnabled = true;
 
 const bgMusic = document.getElementById('bg-music');
+bgMusic.volume = audioVolume;
 const doorOffSound = new Audio('audio/dooroff.mp3');
+doorOffSound.volume = audioVolume;
+const waterSound = new Audio('audio/water.mp3');
+const liftSound = new Audio('audio/lift.mp3');
 
 const startScreen = document.getElementById('start-screen');
 const playBtn = document.getElementById('play-btn');
@@ -44,32 +49,33 @@ const moneyAmount = document.getElementById('money-amount');
 const paperSound = document.getElementById('paper-sound');
 const screenOverlay = document.querySelector('.screen-overlay');
 const dialogueText = document.getElementById('dialogue-text');
+const dialogueSpeaker = document.getElementById('dialogue-speaker');
 const choicesContainer = document.getElementById('choices');
 const toggleSound = document.getElementById('toggle-sound');
 const toggleMusic = document.getElementById('toggle-music');
 const toggleSubtitles = document.getElementById('toggle-subtitles');
 const returnMainBtn = document.getElementById('return-main');
-
 const settingsBtn = document.getElementById('settings-btn');
 
 const modalBackdrop = document.createElement('div');
 modalBackdrop.className = 'modal-backdrop';
 document.body.appendChild(modalBackdrop);
 
+const darknessOverlay = document.createElement('div');
+darknessOverlay.className = 'full-darkness';
+document.body.appendChild(darknessOverlay);
+
 document.documentElement.style.userSelect = 'none';
 document.documentElement.style.webkitUserSelect = 'none';
 document.documentElement.style.MozUserSelect = 'none';
 document.documentElement.style.msUserSelect = 'none';
-document.documentElement.style.webkitTouchCallout = 'none';
 
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('selectstart', e => e.preventDefault());
 document.addEventListener('mousedown', e => e.preventDefault());
 
 function clearChoices() {
-  while (choicesContainer.firstChild) {
-    choicesContainer.removeChild(choicesContainer.firstChild);
-  }
+  choicesContainer.innerHTML = '';
   choicesContainer.style.display = 'none';
 }
 
@@ -92,12 +98,16 @@ function stopTyping() {
   isTyping = false;
 }
 
-function showText(text, callback) {
+function showText(speaker, text, callback) {
   stopTyping();
+  currentSpeaker = speaker;
   currentText = text;
   currentCallback = callback;
   isTyping = true;
+  
+  dialogueSpeaker.textContent = speaker;
   dialogueText.textContent = '';
+  
   let i = 0;
   function type() {
     if (!isTyping) return;
@@ -117,7 +127,6 @@ dialogueText.addEventListener('click', () => {
   if (isTyping) {
     stopTyping();
     dialogueText.textContent = currentText;
-    clearChoices();
     if (currentCallback) currentCallback();
   } else if (currentCallback) {
     currentCallback();
@@ -126,14 +135,20 @@ dialogueText.addEventListener('click', () => {
 
 function applySoundSetting() {
   paperSound.muted = !soundEnabled;
+  doorOffSound.muted = !soundEnabled;
+  waterSound.muted = !soundEnabled;
+  liftSound.muted = !soundEnabled;
 }
 
 function applyMusicSetting() {
   introAudio.muted = !musicEnabled;
+  bgMusic.muted = !musicEnabled;
+  
   if (!startGameStarted) {
     bgMusic.pause();
     return;
   }
+  
   if (musicEnabled) {
     bgMusic.play().catch(() => {});
   } else {
@@ -149,9 +164,11 @@ function initSettings() {
   soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
   musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
   subtitlesEnabled = localStorage.getItem('subtitlesEnabled') !== 'false';
-  if (toggleSound) toggleSound.checked = soundEnabled;
-  if (toggleMusic) toggleMusic.checked = musicEnabled;
-  if (toggleSubtitles) toggleSubtitles.checked = subtitlesEnabled;
+  
+  toggleSound.checked = soundEnabled;
+  toggleMusic.checked = musicEnabled;
+  toggleSubtitles.checked = subtitlesEnabled;
+  
   applySoundSetting();
   applyMusicSetting();
   applySubtitlesSetting();
@@ -161,12 +178,9 @@ function initGame() {
   loadGameState();
   updateUI();
   initSettings();
-  if (gameState.location === 'kitchen') {
-    gameScreen.style.backgroundImage = 'url("pages/fon3.png")';
-  } else {
-    gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
-  }
+  
   startStory();
+  
   document.getElementById('passport-button').onclick = () => {
     if (passportOpen) {
       closeAllModals();
@@ -178,9 +192,10 @@ function initGame() {
       paperSound.currentTime = 0;
       paperSound.volume = audioVolume;
       paperSound.muted = !soundEnabled;
-      paperSound.play();
+      paperSound.play().catch(() => {});
     }
   };
+  
   document.getElementById('diary-button').onclick = () => {
     if (diaryOpen) {
       closeAllModals();
@@ -192,14 +207,12 @@ function initGame() {
       paperSound.currentTime = 0;
       paperSound.volume = audioVolume;
       paperSound.muted = !soundEnabled;
-      paperSound.play();
+      paperSound.play().catch(() => {});
     }
   };
-  modalBackdrop.onclick = () => {
-    if (settingsOpen) {
-      closeAllModals();
-    }
-  };
+  
+  modalBackdrop.onclick = closeAllModals;
+  
   settingsBtn.onclick = () => {
     if (settingsOpen) {
       closeAllModals();
@@ -271,12 +284,9 @@ playBtn.onclick = () => {
   introAudio.volume = audioVolume;
   introAudio.muted = !musicEnabled;
   introAudio.play().catch(() => {});
-  introVideo.onclick = () => {
-    if (!startGameStarted) startGame();
-  };
-  introVideo.onended = () => {
-    if (!startGameStarted) startGame();
-  };
+  
+  introVideo.onclick = () => !startGameStarted && startGame();
+  introVideo.onended = () => !startGameStarted && startGame();
 };
 
 function startGame() {
@@ -290,6 +300,7 @@ function startGame() {
   applyMusicSetting();
   bgMusic.volume = audioVolume;
   bgMusic.loop = true;
+  bgMusic.play().catch(() => {});
 }
 
 nameSubmit.onclick = () => {
@@ -302,20 +313,40 @@ nameSubmit.onclick = () => {
   initGame();
 };
 
-function changeBackground(newBackgroundUrl, callback) {
-  screenOverlay.style.transition = 'opacity 0.7s';
-  screenOverlay.style.opacity = 1;
-  doorOffSound.currentTime = 0;
-  doorOffSound.volume = audioVolume;
-  doorOffSound.muted = !soundEnabled;
-  doorOffSound.play();
-  doorOffSound.onended = () => {
-    gameScreen.style.backgroundImage = `url("${newBackgroundUrl}")`;
-    screenOverlay.style.opacity = 0;
-    setTimeout(() => {
-      if (callback) callback();
-    }, 700);
+function playEffectSound(sound) {
+  if (!sound) return;
+  
+  const originalVolume = bgMusic.volume;
+  bgMusic.volume = originalVolume / 5;
+  
+  sound.currentTime = 0;
+  sound.volume = audioVolume;
+  sound.muted = !soundEnabled;
+  sound.play().catch(() => {});
+  
+  sound.onended = () => {
+    bgMusic.volume = originalVolume;
   };
+}
+
+function changeBackground(newBackgroundUrl, sound, callback) {
+  darknessOverlay.style.opacity = '1';
+  darknessOverlay.style.pointerEvents = 'auto';
+  
+  playEffectSound(sound);
+  
+  setTimeout(() => {
+    gameScreen.style.backgroundImage = `url("${newBackgroundUrl}")`;
+    
+    setTimeout(() => {
+      darknessOverlay.style.opacity = '0';
+      
+      setTimeout(() => {
+        darknessOverlay.style.pointerEvents = 'none';
+        if (callback) callback();
+      }, 1000);
+    }, 3000);
+  }, 1000);
 }
 
 volumeSlider.oninput = () => {
@@ -325,6 +356,8 @@ volumeSlider.oninput = () => {
   paperSound.volume = audioVolume;
   bgMusic.volume = audioVolume;
   doorOffSound.volume = audioVolume;
+  waterSound.volume = audioVolume;
+  liftSound.volume = audioVolume;
   localStorage.setItem('school13_audioVolume', audioVolume);
 };
 
@@ -334,7 +367,7 @@ textSpeedSlider.oninput = () => {
 };
 
 brightnessSlider.oninput = () => {
-  let val = brightnessSlider.value;
+  const val = brightnessSlider.value;
   document.documentElement.style.filter = `brightness(${val}%)`;
   localStorage.setItem('school13_brightness', val);
 };
@@ -357,60 +390,124 @@ returnMainBtn.onclick = () => {
   bgMusic.pause();
 };
 
-if (toggleSound) toggleSound.onchange = e => {
+toggleSound.onchange = e => {
   soundEnabled = e.target.checked;
   localStorage.setItem('soundEnabled', soundEnabled);
   applySoundSetting();
 };
 
-if (toggleMusic) toggleMusic.onchange = e => {
+toggleMusic.onchange = e => {
   musicEnabled = e.target.checked;
   localStorage.setItem('musicEnabled', musicEnabled);
   applyMusicSetting();
 };
 
-if (toggleSubtitles) toggleSubtitles.onchange = e => {
+toggleSubtitles.onchange = e => {
   subtitlesEnabled = e.target.checked;
   localStorage.setItem('subtitlesEnabled', subtitlesEnabled);
   applySubtitlesSetting();
 };
 
 window.addEventListener('visibilitychange', () => {
-  const inPWA = window.matchMedia('(display-mode: standalone)').matches;
   if (document.hidden) {
-    playBtn.style.display = 'none';
-    settingsBtn.style.display = 'none';
     bgMusic.pause();
-  } else {
-    playBtn.style.display = startGameStarted ? 'none' : 'block';
-    settingsBtn.style.display = startGameStarted ? 'block' : 'none';
-    if (startGameStarted && musicEnabled && inPWA) {
-      bgMusic.play().catch(() => {});
-    }
+  } else if (startGameStarted && musicEnabled) {
+    bgMusic.play().catch(() => {});
   }
 });
 
 window.addEventListener('load', () => {
   checkOrientation();
+  
   const savedVolume = localStorage.getItem('school13_audioVolume');
   if (savedVolume) {
     audioVolume = parseFloat(savedVolume);
     volumeSlider.value = audioVolume * 100;
     volumeValue.textContent = `${volumeSlider.value}%`;
   }
+  
   const savedSpeed = localStorage.getItem('school13_textSpeed');
   if (savedSpeed) {
     textSpeed = parseInt(savedSpeed);
     textSpeedSlider.value = 120 - textSpeed;
   }
+  
   const savedBrightness = localStorage.getItem('school13_brightness');
   if (savedBrightness) {
     brightnessSlider.value = savedBrightness;
     document.documentElement.style.filter = `brightness(${savedBrightness}%)`;
   }
+  
   initSettings();
 });
 
 settingsModal.style.overflowY = 'auto';
 settingsModal.style.paddingTop = '10px';
 settingsModal.style.paddingBottom = '10px';
+
+function updateBackground(location) {
+  switch(location) {
+    case 'bedroom':
+      gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
+      break;
+    case 'kitchen':
+      gameScreen.style.backgroundImage = 'url("pages/fon5-1.png")';
+      break;
+    case 'corridor':
+      gameScreen.style.backgroundImage = 'url("pages/fon5.png")';
+      break;
+    case 'kitchen_tea':
+      gameScreen.style.backgroundImage = 'url("pages/fon5-2.png")';
+      break;
+    case 'exit':
+      gameScreen.style.backgroundImage = 'url("pages/fon9-1.png")';
+      break;
+    default:
+      gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('Service Worker зарегистрирован:', reg.scope);
+    }).catch(err => {
+      console.error('Ошибка регистрации Service Worker:', err);
+    });
+  });
+}
+
+let deferredPrompt = null;
+const installBtn = document.getElementById('installBtn');
+const installScreen = document.getElementById('install-screen');
+const gameWrapper = document.getElementById('game-wrapper');
+
+function isPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+if (isPWA()) {
+  installScreen.style.display = 'none';
+  gameWrapper.style.display = 'block';
+} else {
+  installScreen.style.display = 'block';
+  gameWrapper.style.display = 'none';
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.disabled = false;
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const result = await deferredPrompt.userChoice;
+  if (result.outcome === 'accepted') {
+    installBtn.textContent = '✅ Установлено';
+    installBtn.disabled = true;
+    location.reload();
+  }
+  deferredPrompt = null;
+});
