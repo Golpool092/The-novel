@@ -6,31 +6,44 @@ function startStory() {
     case 1:
       startKitchenScene();
       break;
+    case 2:
+      startAfterCleaningScene();
+      break;
+    case 3:
+      startTeaScene();
+      break;
+    case 4:
+      startAfterRunningScene();
+      break;
+    default:
+      startMorningScene();
   }
 }
 
 function startMorningScene() {
   clearChoices();
   updateBackground('bedroom');
-
-  showText(`${playerName}, вставай, в школу пора. Итак 1 сентября прогулял, никчёмный ребёнок.`, () => {
-    if (choicesContainer.children.length === 0) {
-      createFirstChoices();
-    }
+  
+  showText('Мама', `${playerName}, вставай, в школу пора. Итак 1 сентября прогулял, никчёмный ребёнок.`, () => {
+    createFirstChoices();
   });
 }
 
 function createFirstChoices() {
+  clearChoices();
+  
   const choice1 = document.createElement('div');
   choice1.className = 'choice good';
   choice1.textContent = 'Сейчас встану';
   choice1.onclick = () => {
     clearChoices();
     gameState.reputation += 5;
-    showText("(Говорит за дверью) Мама: Ну хоть где-то молодец, я на работу, завтрак на столе", () => {
+    updateUI();
+    
+    showText('Мама', 'Ну хоть где-то молодец, я на работу, завтрак на столе', () => {
       setTimeout(() => {
         createSecondChoices();
-      }, 1000);
+      }, 500);
     });
   };
 
@@ -40,10 +53,12 @@ function createFirstChoices() {
   choice2.onclick = () => {
     clearChoices();
     gameState.reputation -= 5;
-    showText("(Говорит за дверью) Мама: Не дай бог опоздаешь, наказан будешь! Я на работу, завтрак на столе", () => {
+    updateUI();
+    
+    showText('Мама', 'Не дай бог опоздаешь, наказан будешь! Я на работу, завтрак на столе', () => {
       setTimeout(() => {
         createSecondChoices();
-      }, 1000);
+      }, 500);
     });
   };
 
@@ -54,25 +69,18 @@ function createFirstChoices() {
 
 function createSecondChoices() {
   clearChoices();
-
+  
   const choice1 = document.createElement('div');
   choice1.className = 'choice good';
   choice1.textContent = 'Пойти на кухню';
   choice1.onclick = () => {
     clearChoices();
-    showText("Вы решили пойти на кухню...", () => {
-      fadeOutInterface(() => {
-        // Проигрываем звук двери
-        const doorSound = new Audio('audio/dooroff.mp3');
-        doorSound.volume = audioVolume;
-        doorSound.play();
-        
-        setTimeout(() => {
-          gameState.progress = 1;
-          gameState.location = 'kitchen';
-          saveGameState();
-          fadeInInterface('kitchen', startKitchenScene);
-        }, 5000);
+    showText('', 'Вы решили пойти на кухню...', () => {
+      changeBackground('pages/fon5-1.png', doorOffSound, () => {
+        gameState.progress = 1;
+        gameState.location = 'kitchen';
+        saveGameState();
+        startKitchenScene();
       });
     });
   };
@@ -82,20 +90,15 @@ function createSecondChoices() {
   choice2.textContent = 'Полежать, а потом пойти';
   choice2.onclick = () => {
     clearChoices();
-    showText("Вы решили немного полежать...", () => {
-      fadeOutInterface(() => {
-        // Проигрываем звук двери
-        const doorSound = new Audio('audio/dooroff.mp3');
-        doorSound.volume = audioVolume;
-        doorSound.play();
-        
-        setTimeout(() => {
+    showText('', 'Вы решили немного полежать...', () => {
+      setTimeout(() => {
+        changeBackground('pages/fon5-1.png', doorOffSound, () => {
           gameState.progress = 1;
           gameState.location = 'kitchen';
           saveGameState();
-          fadeInInterface('kitchen', startKitchenScene);
-        }, 5000);
-      });
+          startKitchenScene();
+        });
+      }, 2000);
     });
   };
 
@@ -107,22 +110,33 @@ function createSecondChoices() {
 function startKitchenScene() {
   clearChoices();
   updateBackground('kitchen');
-
-  showText("Вы заходите на кухню. На столе стоит завтрак: яичница с колбасой и чай.", () => {
-    if (choicesContainer.children.length === 0) {
-      createKitchenChoices();
-    }
+  
+  showText('', 'Вы заходите на кухню. На столе стоит завтрак: яичница с колбасой и чай.', () => {
+    createKitchenChoices();
   });
 }
 
 function createKitchenChoices() {
+  clearChoices();
+  
   const choice1 = document.createElement('div');
   choice1.className = 'choice good';
   choice1.textContent = 'Поесть и убрать за собой';
   choice1.onclick = () => {
     clearChoices();
     gameState.reputation += 10;
-    showText("Вы аккуратно поели и помыли посуду. Мать будет довольна. (КОНЕЦ, ЗАВТРА ЗАЛЬЮ ОБНОВУ С ОЗВУЧКОЙ, МАТЕРЬЮ И НЕБОЛЬШИМ БЕТА ПРОДОЛЖЕНИЕМ)", () => {});
+    updateUI();
+    
+    showText('', 'Вы аккуратно поели и помыли посуду. Мать будет довольна.', () => {
+      setTimeout(() => {
+        changeBackground('pages/fon5.png', waterSound, () => {
+          gameState.progress = 2;
+          gameState.location = 'corridor';
+          saveGameState();
+          startAfterCleaningScene();
+        });
+      }, 1000);
+    });
   };
 
   const choice2 = document.createElement('div');
@@ -132,8 +146,18 @@ function createKitchenChoices() {
     clearChoices();
     gameState.reputation -= 5;
     gameState.money += 50;
-    moneyAmount.textContent = gameState.money;
-    showText("Вы быстро съели завтрак и заметили 50 рублей на столе. Посуду оставили грязной, но свистнули деньги. (КОНЕЦ, ЗАВТРА ЗАЛЬЮ ОБНОВУ С ОЗВУЧКОЙ, МАТЕРЬЮ И НЕБОЛЬШИМ БЕТА ПРОДОЛЖЕНИЕМ)", () => {});
+    updateUI();
+    
+    showText('', 'Вы быстро съели завтрак и заметили 50 рублей на столе. Посуду оставили грязной, но свистнули деньги.', () => {
+      setTimeout(() => {
+        changeBackground('pages/fon9-1.png', liftSound, () => {
+          gameState.progress = 4;
+          gameState.location = 'exit';
+          saveGameState();
+          startAfterRunningScene();
+        });
+      }, 1000);
+    });
   };
 
   choicesContainer.appendChild(choice1);
@@ -141,84 +165,86 @@ function createKitchenChoices() {
   choicesContainer.style.display = 'flex';
 }
 
-// Функция для плавного исчезновения интерфейса
-function fadeOutInterface(callback) {
-  const elements = [
-    document.querySelector('.left-panel'),
-    document.querySelector('.hud'),
-    document.querySelector('.dialogue'),
-    document.querySelector('.choices'),
-    gameScreen
-  ];
+function startAfterCleaningScene() {
+  clearChoices();
+  updateBackground('corridor');
   
-  // Плавное исчезновение всех элементов
-  elements.forEach(el => {
-    if (el) {
-      el.style.transition = 'opacity 1s ease-in-out';
-      el.style.opacity = '0';
-    }
+  showText('', 'Вы закончили уборку. Теперь можно идти в школу.', () => {
+    createAfterCleaningChoices();
   });
-  
-  // Затемнение оверлея
-  screenOverlay.style.transition = 'opacity 1s ease-in-out';
-  screenOverlay.style.opacity = '1';
-  
-  setTimeout(() => {
-    // Скрываем элементы после анимации
-    elements.forEach(el => {
-      if (el) el.style.display = 'none';
-    });
-    if (callback) callback();
-  }, 1000);
 }
 
-// Функция для плавного появления интерфейса с новым фоном
-function fadeInInterface(location, callback) {
-  // Обновляем фон
-  updateBackground(location);
+function createAfterCleaningChoices() {
+  clearChoices();
   
-  const elements = [
-    document.querySelector('.left-panel'),
-    document.querySelector('.hud'),
-    document.querySelector('.dialogue'),
-    gameScreen
-  ];
-  
-  // Показываем элементы (но пока прозрачные)
-  elements.forEach(el => {
-    if (el) {
-      el.style.display = el === gameScreen ? 'block' : 'flex';
-      el.style.opacity = '0';
-    }
-  });
-  
-  // Начинаем с полностью черного экрана
-  screenOverlay.style.opacity = '1';
-  
-  setTimeout(() => {
-    // Плавное появление интерфейса
-    elements.forEach(el => {
-      if (el) {
-        el.style.transition = 'opacity 1s ease-in-out';
-        el.style.opacity = '1';
-      }
+  const choice1 = document.createElement('div');
+  choice1.className = 'choice good';
+  choice1.textContent = 'Пойти в школу';
+  choice1.onclick = () => {
+    clearChoices();
+    showText('', 'Вы пошли в школу. Пришли вовремя. (КОНЕЦ СЦЕНЫ)', () => {});
+  };
+
+  const choice2 = document.createElement('div');
+  choice2.className = 'choice bad';
+  choice2.textContent = 'Заварить еще чаю';
+  choice2.onclick = () => {
+    clearChoices();
+    showText('', 'Вы решили заварить чай...', () => {
+      setTimeout(() => {
+        changeBackground('pages/fon5-2.png', null, () => {
+          gameState.progress = 3;
+          gameState.location = 'kitchen_tea';
+          saveGameState();
+          startTeaScene();
+        });
+      }, 1000);
     });
-    
-    // Плавное исчезновение оверлея
-    screenOverlay.style.transition = 'opacity 1s ease-in-out';
-    screenOverlay.style.opacity = '0';
-    
-    setTimeout(() => {
-      if (callback) callback();
-    }, 1000);
-  }, 100);
+  };
+
+  choicesContainer.appendChild(choice1);
+  choicesContainer.appendChild(choice2);
+  choicesContainer.style.display = 'flex';
 }
 
-// Функция обновления фона в зависимости от локации
-function updateBackground(location) {
-  if (location === 'kitchen') {
-    gameScreen.style.backgroundImage = 'url("pages/fon5-1.png")';
-  } else {
-    gameScreen.style.backgroundImage = 'url("pages/fon1.png")';
-  }
+function startTeaScene() {
+  clearChoices();
+  updateBackground('kitchen_tea');
+  
+  showText('', 'Вы заварили чай. Но время идет...', () => {
+    createTeaChoices();
+  });
 }
+
+function createTeaChoices() {
+  clearChoices();
+  
+  const choice1 = document.createElement('div');
+  choice1.className = 'choice bad';
+  choice1.textContent = 'Выпить чаю и выбежать';
+  choice1.onclick = () => {
+    clearChoices();
+    showText('', 'Вы выпили чай, но опоздали на первый урок. (КОНЕЦ СЦЕНЫ)', () => {});
+  };
+
+  const choice2 = document.createElement('div');
+  choice2.className = 'choice bad';
+  choice2.textContent = 'Понять что опоздаю и выбежать';
+  choice2.onclick = () => {
+    clearChoices();
+    showText('', 'Вы бросили чай и побежали, но все равно опоздали. (КОНЕЦ СЦЕНЫ)', () => {});
+  };
+
+  choicesContainer.appendChild(choice1);
+  choicesContainer.appendChild(choice2);
+  choicesContainer.style.display = 'flex';
+}
+
+function startAfterRunningScene() {
+  clearChoices();
+  updateBackground('exit');
+  
+  playEffectSound(liftSound);
+  
+  showText('', 'Вы выбежали из квартиры и вызвали лифт. Теперь в школу!', () => {});
+                                         }
