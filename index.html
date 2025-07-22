@@ -4,16 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Школа №13</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" sizes="192x192" href="pages/icon-192.png" />
-  <link rel="apple-touch-icon" sizes="512x512" href="pages/icon-512.png" />
-  <meta name="theme-color" content="#111111" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-
   <div id="install-screen" role="main" aria-label="Информация об установке Школа №13">
     <div class="card">
       <div class="top">
@@ -44,6 +38,8 @@
       <div class="menu-buttons">
         <button id="play-btn" class="play-btn">ИГРАТЬ</button>
         <button id="settings-menu-btn" class="settings-menu-btn">НАСТРОЙКИ</button>
+        <div class="version-info">1.0.3 - BETA</div>
+</div>
       </div>
     </div>
 
@@ -144,57 +140,7 @@
     <audio id="paper-sound" src="audio/paper.mp3"></audio>
   </div>
 
-<script>
-let deferredPrompt = null;
-const installBtn = document.getElementById('installBtn');
-const installScreen = document.getElementById('install-screen');
-const gameWrapper = document.getElementById('game-wrapper');
-
-function isPWA() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
-
-if (isPWA()) {
-  installScreen.style.display = 'none';
-  gameWrapper.style.display = 'block';
-} else {
-  installScreen.style.display = 'block';
-  gameWrapper.style.display = 'none';
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.disabled = false;
-});
-
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const result = await deferredPrompt.userChoice;
-  if (result.outcome === 'accepted') {
-    installBtn.textContent = '✅ Установлено';
-    installBtn.disabled = true;
-    location.reload();
-  }
-  deferredPrompt = null;
-});
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      console.log('Service Worker зарегистрирован:', reg.scope);
-    }).catch(err => {
-      console.error('Ошибка регистрации Service Worker:', err);
-    });
-  });
-}
-</script>
-
-<script src="main.js"></script>
-<script src="story.js"></script>
-
+  <script src="main.js"></script>
+  <script src="story.js"></script>
 </body>
 </html>
